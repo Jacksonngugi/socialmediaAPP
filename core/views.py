@@ -42,17 +42,19 @@ def signup (request):
 
          
         if password == password2:
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(username=username).exists():
                 messages.info(request,'Email already taken!')
                 return redirect('signup')
             
-            elif User.objects.filter(username=username).exists():
+            elif User.objects.filter(email=email).exists():
                 messages.info(request,'Username already taken!')
                 return redirect('signup')
             
             else:
                 user = User.objects.create_user(username=username,email=email,password=password)
                 user.save()
+
+                return redirect('signin')
             
         else:
             messages.info(request, 'Password do not match!')
@@ -66,3 +68,8 @@ def profile (request):
 
 def setting (request):
     return render(request,'setting.html')
+
+def logout (request):
+    auth.logout(request)
+
+    return redirect('signin')
