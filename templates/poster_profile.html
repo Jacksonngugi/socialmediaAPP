@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="" />
     <meta name="keywords" content="" />
-	<title>Profile - {{user_profile.user}}</title>
+	<title>Profile -@ {{profile.user}}</title>
    <!-- <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16"> -->
     
     <link rel="stylesheet" href="{% static 'css/main.min.css' %}">
@@ -27,20 +27,32 @@
 	<section>
 			<div class="feature-photo">
 				<figure><img src="{% static 'images/resources/timeline-1.jpg' %}" alt=""></figure>
-				<form>
+				<form action="follow" method="Post">
+
+					{%csrf_token%}
 					<div class="add-btn">
 					
-					{%if no_of_post == 0%}
+					{%if len_of_posts == 0%}
 					<span style="color: white; font-size: 27px;"><b>0 post</b></span>
-					{%elif no_of_post == 1%}
+					{%elif len_of_posts == 1%}
 					<span style="color: white; font-size: 27px;"><b>1 post</b></span>
 					{%else%}
-					<span style="color: white; font-size: 27px;"><b>{{no_of_post}} posts</b></span>
+					<span style="color: white; font-size: 27px;"><b>{{len_of_posts}} posts</b></span>
 					{%endif%}
-					<span style="color: white; font-size: 27px;"><b>{{account_following|length}} followers</b></span>
-					<span style="color: white; font-size: 27px;"><b>{{account_being_followed|length}} following</b></span>
 					
-					</div>
+					<span style="color: white; font-size: 27px;"><b>{{follow|length}} followers</b></span>
+					<span style="color: white; font-size: 27px;"><b>{{account_following|length}} following</b></span>
+
+					{%if profile.user.username != name%}
+					<input type="hidden" name="follower" value="{{user_object.username}}" >
+					<input type="hidden" name="being_followed" value="{{profile.user}}" >
+					{%if follow_unfollow == None%}
+					<a  title="" data-ripple=""><button type="submit" style="background-color: #ffc0cb; border: #ffc0cb;">Follow</button></a>
+					{%else%}
+					<a  title="" data-ripple=""><button type="submit" style="background-color: #ffc0cb; border: #ffc0cb;">unfollow</button></a>
+					{%endif%}
+					{%endif%}
+				</div>
 				</form>
 
 				<!-- <form class="edit-phto">
@@ -55,13 +67,7 @@
 						<div class="col-lg-2 col-sm-3">
 							<div class="user-avatar">
 								<figure>
-									<img src="{{user_profile.pro_image.url}}" style="height: 250px; width: 100%;" alt="">
-									<form class="edit-phto">
-										<i class="fa fa-camera-retro"></i>
-										<label class="fileContainer">
-											<a href="#account-settings">Upload Profile Photo</a>
-										</label>
-									</form>
+									<img src="{{profile.pro_image.url}}" style="height: 250px; width: 100%;" alt="">
 								</figure>
 							</div>
 						</div>
@@ -69,7 +75,7 @@
 							<div class="timeline-info">
 								<ul>
 									<li class="admin-name">
-									  <h5 style="color: black;white-space: nowrap; width: 110px; font-size: 27px;"><b>{{user_profile.user}}</b><!--<i class="fa fa-check-circle" style="color: #48dbfb;" aria-hidden="true"></i>--></h5>
+									  <h5 style="color: black;white-space: nowrap; width: 110px; font-size: 27px;"><b>@{{profile.user}}</b><i class="fa fa-check-circle" style="color: #48dbfb;" aria-hidden="true"></i></h5>
 									  <a href="index"><i class="fa fa-home" style="font-size:24px"></i></a> 
 									  <!--<span>Group Admin</span>-->
 									</li>
@@ -98,7 +104,7 @@
 		</section><!-- top area -->
 		<section>
 			<div class="bio">
-				{{user_profile.bio}}
+				{{profile.bio}}
 			</div>
 		</section>
 		
@@ -130,13 +136,16 @@
 									<ul class="photos">
 					                    {%for post in posts%}
 										<li>
-											<a class="strip" href="https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png" title="" data-strip-group="mygroup" data-strip-group-options="loop: false">
+											<a  class="strip" href="post?poster={{profile.user.username}}" title="" data-strip-group="mygroup" data-strip-group-options="loop: false">
 												<img src="{{post.image.url}}" style="height: 250px; width: 300px;" alt=""></a>
 										</li>
-                                        {%endfor%}
+										
+										{%endfor%}
 									</ul>
+									
 									<!--<div class="lodmore"><button class="btn-view btn-load-more"></button></div>-->
 								</div><!-- photos -->
+								
 							</div><!-- centerl meta -->
 							<div class="col-lg-3">
 								<aside class="sidebar static">
